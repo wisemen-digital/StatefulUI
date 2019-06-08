@@ -1,0 +1,10 @@
+input_dir: Resources
+output_dir: Sources
+strings:
+  inputs: en.lproj/Localizable.strings
+  outputs:
+    templatePath: Sources/Generated/Strings.stencil
+    output: Generated/Strings.swift
+    params:
+      enumName: StatefulUIStrings
+      publicAccess: true

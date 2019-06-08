@@ -1,0 +1,5 @@
+"button.refresh" = "Rafraîchir";
+
+"message.error" = "Un problème est survenu lors de la récupération des données. S'il vous plaît, vérifiez votre connexion à internet et réessayez.";
+
+"message.loading"= "Chargement…";

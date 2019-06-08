@@ -1,0 +1,5 @@
+"button.refresh" = "Refresh";
+
+"message.error" = "There was an issue fetching the data. Please check your internet connection and try again.";
+
+"message.loading"= "Loading…";

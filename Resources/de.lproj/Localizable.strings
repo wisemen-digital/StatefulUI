@@ -1,0 +1,5 @@
+"button.refresh" = "Aktualisieren";
+
+"message.error" = "Beim Abrufen der Daten ist ein Problem aufgetreten. Bitte überprüfen Sie Ihre Internetverbindung und versuchen Sie es erneut.";
+
+"message.loading"= "Wird geladen…";

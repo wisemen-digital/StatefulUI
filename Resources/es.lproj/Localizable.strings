@@ -1,0 +1,5 @@
+"button.refresh" = "Refrescar";
+
+"message.error" = "Hubo un problema al obtener los datos. Por favor, compruebe su conexión a Internet y vuelva a intentarlo.";
+
+"message.loading"= "Cargando…";
