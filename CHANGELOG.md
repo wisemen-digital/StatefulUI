@@ -5,6 +5,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Master](https://github.com/appwise-labs/StatefulUI)
 
+## [1.0.1](https://github.com/appwise-labs/StatefulUI/releases/tag/1.0.1)
+
 ### Bug Fixes
 
 * Add missing `nl` translation for the refresh button default title.
