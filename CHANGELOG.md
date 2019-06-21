@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 
 ## [Master](https://github.com/appwise-labs/StatefulUI)
 
+### Bug Fixes
+
+* Fixed a sporadic crash related to block copying (Obj-C interop).
+
 ## [1.0.1](https://github.com/appwise-labs/StatefulUI/releases/tag/1.0.1)
 
 ### Bug Fixes

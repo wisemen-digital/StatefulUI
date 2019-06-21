@@ -49,13 +49,13 @@ extension ViewStateMachine {
 private extension UITableView {
 	@objc
 	func statefulTableView_reloadData() {
-		perform(#selector(statefulTableView_reloadData))
+		statefulTableView_reloadData()
 		AssociatedObjects.listener[self]?.object?.setupInitialViewState()
 	}
 
 	@objc
 	func statefulTableView_endUpdates() {
-		perform(#selector(statefulTableView_endUpdates))
+		statefulTableView_endUpdates()
 		AssociatedObjects.listener[self]?.object?.setupInitialViewState()
 	}
 }
@@ -65,13 +65,13 @@ private extension UITableView {
 private extension UICollectionView {
 	@objc
 	func statefulCollectionView_reloadData() {
-		perform(#selector(statefulCollectionView_reloadData))
+		statefulCollectionView_reloadData()
 		AssociatedObjects.listener[self]?.object?.setupInitialViewState()
 	}
 
 	@objc
 	func statefulCollectionView_performBatchUpdates(_ updates: (() -> Void)?, completion: ((Bool) -> Void)? = nil) {
-		perform(#selector(statefulCollectionView_performBatchUpdates), with: updates) { (completed: Bool) in
+		statefulCollectionView_performBatchUpdates(updates) { (completed: Bool) in
 			AssociatedObjects.listener[self]?.object?.setupInitialViewState()
 			completion?(completed)
 		}
