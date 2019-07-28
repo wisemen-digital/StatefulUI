@@ -25,7 +25,7 @@ public final class StateLoadingView: UIView {
 	}
 
 	@objc public dynamic var subtitleColor: UIColor? = .black {
-		didSet { subtitleLabel?.textColor = titleColor }
+		didSet { subtitleLabel?.textColor = subtitleColor }
 	}
 }
 

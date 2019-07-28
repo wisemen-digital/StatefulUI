@@ -24,7 +24,7 @@ public final class StateEmptyView: UIView {
 	}
 
 	@objc public dynamic var subtitleColor: UIColor? = .black {
-		didSet { subtitleLabel?.textColor = titleColor }
+		didSet { subtitleLabel?.textColor = subtitleColor }
 	}
 
 	@objc public dynamic var buttonBackgroundColor: UIColor? = .clear {

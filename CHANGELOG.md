@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 
 ## [Master](https://github.com/appwise-labs/StatefulUI)
 
+### Bug Fixes
+
+* Fixed incorrect color being used for subtitles.
+
 ## [1.0.2](https://github.com/appwise-labs/StatefulUI/releases/tag/1.0.2)
 
 ### Bug Fixes
