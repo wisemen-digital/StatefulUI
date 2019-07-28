@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 
 ## [Master](https://github.com/appwise-labs/StatefulUI)
 
+### New Features
+
+* Add `edgeInsets` property instead of fixed insets.
+
 ### Bug Fixes
 
 * Fixed incorrect color being used for subtitles.

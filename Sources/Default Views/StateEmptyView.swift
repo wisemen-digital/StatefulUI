@@ -31,6 +31,8 @@ public final class StateEmptyView: UIView {
 		didSet { button?.backgroundColor = buttonBackgroundColor }
 	}
 
+	@objc public dynamic var edgeInsets = UIEdgeInsets(top: 20, left: 30, bottom: 20, right: 30)
+
 	@IBAction private func tappedButton() {
 		delegate?.tappedPlaceholderButton(in: self)
 	}
@@ -44,7 +46,7 @@ extension StateEmptyView: NibReusable {
 
 extension StateEmptyView: StatefulPlaceholderView {
 	public func placeholderViewInsets() -> UIEdgeInsets {
-		return UIEdgeInsets(top: 20, left: 30, bottom: 20, right: 30)
+		return edgeInsets
 	}
 }
 

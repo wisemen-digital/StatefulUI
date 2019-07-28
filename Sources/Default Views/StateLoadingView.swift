@@ -27,6 +27,8 @@ public final class StateLoadingView: UIView {
 	@objc public dynamic var subtitleColor: UIColor? = .black {
 		didSet { subtitleLabel?.textColor = subtitleColor }
 	}
+
+	@objc public dynamic var edgeInsets = UIEdgeInsets(top: 20, left: 30, bottom: 20, right: 30)
 }
 
 extension StateLoadingView: NibReusable {
@@ -37,7 +39,7 @@ extension StateLoadingView: NibReusable {
 
 extension StateLoadingView: StatefulPlaceholderView {
 	public func placeholderViewInsets() -> UIEdgeInsets {
-		return UIEdgeInsets(top: 20, left: 30, bottom: 20, right: 30)
+		return edgeInsets
 	}
 }
 
