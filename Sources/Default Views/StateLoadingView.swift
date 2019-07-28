@@ -11,21 +11,21 @@ import UIKit
 
 public final class StateLoadingView: UIView {
 	// swiftlint:disable private_outlet
-	@IBOutlet public var activityIndicator: UIActivityIndicatorView?
-	@IBOutlet public var titleLabel: UILabel?
-	@IBOutlet public var subtitleLabel: UILabel?
+	@IBOutlet public var activityIndicator: UIActivityIndicatorView!
+	@IBOutlet public var titleLabel: UILabel!
+	@IBOutlet public var subtitleLabel: UILabel!
 	// swiftlint:enable private_outlet
 
 	@objc public dynamic var activityIndicatorColor: UIColor? = .gray {
-		didSet { activityIndicator?.color = activityIndicatorColor }
+		didSet { activityIndicator.color = activityIndicatorColor }
 	}
 
 	@objc public dynamic var titleColor: UIColor? = .black {
-		didSet { titleLabel?.textColor = titleColor }
+		didSet { titleLabel.textColor = titleColor }
 	}
 
 	@objc public dynamic var subtitleColor: UIColor? = .black {
-		didSet { subtitleLabel?.textColor = subtitleColor }
+		didSet { subtitleLabel.textColor = subtitleColor }
 	}
 
 	@objc public dynamic var edgeInsets = UIEdgeInsets(top: 20, left: 30, bottom: 20, right: 30)
@@ -53,10 +53,10 @@ extension StateLoadingView {
 	}
 
 	public func configure(title: String = "", subtitle: String = StatefulUIStrings.Message.loading) {
-		titleLabel?.text = title
-		titleLabel?.isHidden = title.isEmpty
+		titleLabel.text = title
+		titleLabel.isHidden = title.isEmpty
 
-		subtitleLabel?.text = subtitle
-		subtitleLabel?.isHidden = subtitle.isEmpty
+		subtitleLabel.text = subtitle
+		subtitleLabel.isHidden = subtitle.isEmpty
 	}
 }

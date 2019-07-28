@@ -8,6 +8,7 @@ All notable changes to this project will be documented in this file.
 ### New Features
 
 * Add `edgeInsets` property instead of fixed insets.
+* Easier access to subviews (made them non-optional).
 
 ### Bug Fixes
 
