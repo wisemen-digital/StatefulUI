@@ -13,6 +13,7 @@ All notable changes to this project will be documented in this file.
 ### Bug Fixes
 
 * Fixed incorrect color being used for subtitles.
+* Don't set the button `cornerRadius` to 20 by default, so you can set it by appearance selectors.
 
 ## [1.0.2](https://github.com/appwise-labs/StatefulUI/releases/tag/1.0.2)
 
