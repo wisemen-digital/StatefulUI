@@ -5,6 +5,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Master](https://github.com/appwise-labs/StatefulUI)
 
+## [1.0.3](https://github.com/appwise-labs/StatefulUI/releases/tag/1.0.3)
+
 ### New Features
 
 * Add `edgeInsets` property instead of fixed insets.
