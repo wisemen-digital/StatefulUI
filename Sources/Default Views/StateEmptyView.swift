@@ -32,6 +32,14 @@ public final class StateEmptyView: UIView {
 		didSet { button.backgroundColor = buttonBackgroundColor }
 	}
 
+	@objc public dynamic var titleFont: UIFont = .preferredFont(forTextStyle: .headline) {
+		didSet { titleLabel.font = titleFont }
+	}
+
+	@objc public dynamic var subtitleFont: UIFont = .preferredFont(forTextStyle: .subheadline) {
+		didSet { subtitleLabel.font = subtitleFont }
+	}
+
 	@objc public dynamic var edgeInsets = UIEdgeInsets(top: 20, left: 30, bottom: 20, right: 30)
 
 	@IBAction private func tappedButton() {
@@ -44,6 +52,8 @@ public final class StateEmptyView: UIView {
 		titleLabel.textColor = titleColor
 		subtitleLabel.textColor = subtitleColor
 		button.backgroundColor = buttonBackgroundColor
+		titleLabel.font = titleFont
+		subtitleLabel.font = subtitleFont
 	}
 }
 
