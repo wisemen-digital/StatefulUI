@@ -37,6 +37,14 @@ public final class StateErrorView: UIView {
 	@IBAction private func tappedButton() {
 		delegate?.tappedPlaceholderButton(in: self)
 	}
+
+	public override func awakeFromNib() {
+		super.awakeFromNib()
+
+		titleLabel.textColor = titleColor
+		subtitleLabel.textColor = subtitleColor
+		button.backgroundColor = buttonBackgroundColor
+	}
 }
 
 extension StateErrorView: NibReusable {

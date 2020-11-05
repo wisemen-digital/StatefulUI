@@ -29,6 +29,14 @@ public final class StateLoadingView: UIView {
 	}
 
 	@objc public dynamic var edgeInsets = UIEdgeInsets(top: 20, left: 30, bottom: 20, right: 30)
+
+	public override func awakeFromNib() {
+		super.awakeFromNib()
+
+		titleLabel.textColor = titleColor
+		subtitleLabel.textColor = subtitleColor
+		activityIndicator.color = activityIndicatorColor
+	}
 }
 
 extension StateLoadingView: NibReusable {
