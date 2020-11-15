@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 
 ## [Master](https://github.com/appwise-labs/StatefulUI)
 
+### New Features
+
+* Configure title/subtitle fonts.
+
+### Bug Fixes
+
+* Better handling of safe area insets.
+
 ## [1.0.3](https://github.com/appwise-labs/StatefulUI/releases/tag/1.0.3)
 
 ### New Features
