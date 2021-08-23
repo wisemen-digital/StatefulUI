@@ -41,6 +41,10 @@ public class ViewStateMachine {
 	///         \_ error | loading | empty view
 	private lazy var containerView = PassthroughView(frame: .zero)
 
+	/// Views detached from their state are marked to be removed from the view hierarchy.
+	/// Removal happens on the next state transition.
+	private var pendingViews: [UIView] = []
+
 	/// The view that should act as the superview for any added views
 	public weak var view: UIView?
 
@@ -85,11 +89,17 @@ public class ViewStateMachine {
 
 	/// Associates a view for the given state
 	public func addView(_ view: UIView, forState state: StatefulViewControllerState) {
+		if let detachedView = viewStore[state], detachedView != view {
+			pendingViews.append(detachedView)
+		}
 		viewStore[state] = view
 	}
 
 	///  Removes the view for the given state
 	public func removeViewForState(_ state: StatefulViewControllerState) {
+		if let detachedView = viewStore[state], detachedView != view {
+			pendingViews.append(detachedView)
+		}
 		viewStore[state] = nil
 	}
 
@@ -133,6 +143,7 @@ public class ViewStateMachine {
 
 			// Switch state and update the view
 			DispatchQueue.main.sync {
+				self.removePendingViews()
 				switch state {
 				case .none:
 					self.hideAllViews(animated: animated, completion: handler)
@@ -226,6 +237,14 @@ public class ViewStateMachine {
 		}
 
 		animateChanges(animated: animated, animations: animations, completion: animationCompletion)
+	}
+
+	/// Removes all views marked as pending from the view hierachy.
+	private func removePendingViews() {
+		for view in pendingViews {
+			view.removeFromSuperview()
+		}
+		pendingViews.removeAll()
 	}
 
 	private func animateChanges(animated: Bool, animations: @escaping () -> Void, completion: ((Bool) -> Void)?) {
