@@ -76,19 +76,21 @@ final class PassthroughView: UIView {
 	}
 
 	private func updatePositioning() {
-		var frame = superview?.bounds ?? .zero
+		DispatchQueue.main.async {
+			var frame = superview?.bounds ?? .zero
 
-		if let superview = superview as? UIScrollView {
-			if #available(iOS 11.0, *) {
-				frame = frame.inset(by: superview.safeAreaInsets)
-			} else {
-				frame = frame.inset(by: superview.contentInset)
+			if let superview = superview as? UIScrollView {
+				if #available(iOS 11.0, *) {
+					frame = frame.inset(by: superview.safeAreaInsets)
+				} else {
+					frame = frame.inset(by: superview.contentInset)
+				}
 			}
-		}
 
-		frame.origin = .zero
-		if frame != self.frame {
-			super.frame = frame
+			if frame != self.frame {
+				super.frame = frame
+			}
 		}
 	}
 }
+
