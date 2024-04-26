@@ -1,8 +1,6 @@
 //
-//  AsyncOperation.swift
-//  StatefulUI
-//
-//  Created by David Jennes on 08/06/2019.
+// StatefulUI
+// Copyright © 2024 Wisemen
 //
 
 import Foundation

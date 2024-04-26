@@ -1,9 +1,6 @@
 //
-//  ActivityIndicatingView.swift
-//  StatefulUI
-//
-//  Created by David Jennes on 24/01/2019.
-//  Copyright © 2019 Appwise. All rights reserved.
+// StatefulUI
+// Copyright © 2024 Wisemen
 //
 
 import UIKit
