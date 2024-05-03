@@ -151,19 +151,6 @@ public class ViewStateMachine {
 		})
 	}
 
-	/// Update the insets of an already visible view
-	public func updateViewInsets() {
-		switch currentState {
-		case .none:
-			break
-		case .view(let viewKey):
-			if let view = viewStore[viewKey], view.superview == containerView {
-				let insets = (view as? StatefulPlaceholderView)?.placeholderViewInsets() ?? .zero
-				updateConstraints(for: view, insets: insets)
-			}
-		}
-	}
-
 	// MARK: Private view updates
 
 	private func showView(forKey state: StatefulViewControllerState, animated: Bool, completion: (() -> Void)? = nil) {
@@ -182,8 +169,13 @@ public class ViewStateMachine {
 			newView.translatesAutoresizingMaskIntoConstraints = false
 			containerView.addSubview(newView)
 
-			let insets = (newView as? StatefulPlaceholderView)?.placeholderViewInsets() ?? UIEdgeInsets()
-			updateConstraints(for: newView, insets: insets)
+			var placeholderView = newView as? StatefulPlaceholderView
+			let insets = placeholderView?.placeholderViewInsets() ?? .zero
+
+			addConstraints(for: newView, insets: insets)
+			placeholderView?.configure { [weak self] in
+				self?.updateConstraints()
+			}
 		}
 
 		let animations: () -> Void = {
@@ -215,6 +207,10 @@ public class ViewStateMachine {
 		let animationCompletion: (Bool) -> Void = { [weak self] _ in
 			for (_, view) in store {
 				view.removeFromSuperview()
+
+				if let placeholderView = view as? StatefulPlaceholderView {
+					placeholderView.configure(updateHandler: nil)
+				}
 			}
 
 			// Remove the container view
@@ -229,6 +225,10 @@ public class ViewStateMachine {
 	private func removePendingViews() {
 		for view in pendingViews {
 			view.removeFromSuperview()
+
+			if let placeholderView = view as? StatefulPlaceholderView {
+				placeholderView.configure(updateHandler: nil)
+			}
 		}
 		pendingViews.removeAll()
 	}
@@ -245,47 +245,73 @@ public class ViewStateMachine {
 // MARK: - Constraints
 
 private extension ViewStateMachine {
-	static let constraintIdentifier = "stateful-insets"
+	enum ConstraintIdentifier: String {
+		case top, bottom, left, right
+	}
 
-	func updateConstraints(for view: UIView, insets: UIEdgeInsets) {
-		cleanupOldConstraints()
-
-		if #available(iOS 11.0, *) {
-			updateConstraints(for: view, insets: insets, layoutGuide: containerView.safeAreaLayoutGuide)
+	func addConstraints(for view: UIView, insets: UIEdgeInsets) {
+		if #available(iOS 11.0, *), false {
+			addConstraints(for: view, insets: insets, layoutGuide: containerView.safeAreaLayoutGuide)
 		} else {
-			updateConstraintsOld(for: view, insets: insets)
+			addConstraintsOld(for: view, insets: insets)
 		}
 	}
 
-	func updateConstraintsOld(for view: UIView, insets: UIEdgeInsets) {
+	func addConstraintsOld(for view: UIView, insets: UIEdgeInsets) {
 		let metrics = ["top": insets.top, "bottom": insets.bottom, "left": insets.left, "right": insets.right]
 		let views = ["view": view]
 
-		let hConstraints = NSLayoutConstraint.constraints(withVisualFormat: "|-left-[view]-right-|", options: [], metrics: metrics, views: views)
-		hConstraints.forEach { $0.identifier = Self.constraintIdentifier }
+		let leftConstraints = NSLayoutConstraint.constraints(withVisualFormat: "|-left-[view]", options: [], metrics: metrics, views: views)
+		leftConstraints.forEach { $0.identifier = ConstraintIdentifier.left.rawValue }
 
-		let vConstraints = NSLayoutConstraint.constraints(withVisualFormat: "V:|-top-[view]-bottom-|", options: [], metrics: metrics, views: views)
-		vConstraints.forEach { $0.identifier = Self.constraintIdentifier }
+		let rightConstraints = NSLayoutConstraint.constraints(withVisualFormat: "[view]-right-|", options: [], metrics: metrics, views: views)
+		rightConstraints.forEach { $0.identifier = ConstraintIdentifier.right.rawValue }
 
-		containerView.addConstraints(hConstraints)
-		containerView.addConstraints(vConstraints)
+		let topConstraints = NSLayoutConstraint.constraints(withVisualFormat: "V:|-top-[view]", options: [], metrics: metrics, views: views)
+		topConstraints.forEach { $0.identifier = ConstraintIdentifier.top.rawValue }
+
+		let bottomConstraints = NSLayoutConstraint.constraints(withVisualFormat: "V:[view]-bottom-|", options: [], metrics: metrics, views: views)
+		bottomConstraints.forEach { $0.identifier = ConstraintIdentifier.bottom.rawValue }
+
+		containerView.addConstraints(leftConstraints)
+		containerView.addConstraints(rightConstraints)
+		containerView.addConstraints(topConstraints)
+		containerView.addConstraints(bottomConstraints)
 	}
 
 	@available(iOS 11.0, *)
-	func updateConstraints(for view: UIView, insets: UIEdgeInsets, layoutGuide: UILayoutGuide) {
-		let constraints = [
-			view.leftAnchor.constraint(equalTo: layoutGuide.leftAnchor, constant: insets.left),
-			view.rightAnchor.constraint(equalTo: layoutGuide.rightAnchor, constant: -insets.right),
-			view.topAnchor.constraint(equalTo: layoutGuide.topAnchor, constant: insets.top),
-			view.bottomAnchor.constraint(equalTo: layoutGuide.bottomAnchor, constant: -insets.bottom)
-		]
+	func addConstraints(for view: UIView, insets: UIEdgeInsets, layoutGuide: UILayoutGuide) {
+		let leftConstraint = view.leftAnchor.constraint(equalTo: layoutGuide.leftAnchor, constant: insets.left)
+		leftConstraint.identifier = ConstraintIdentifier.left.rawValue
 
-		constraints.forEach { $0.identifier = Self.constraintIdentifier }
-		NSLayoutConstraint.activate(constraints)
+		let rightConstraint = layoutGuide.rightAnchor.constraint(equalTo: view.rightAnchor, constant: insets.right)
+		rightConstraint.identifier = ConstraintIdentifier.right.rawValue
+
+		let topConstraint = view.topAnchor.constraint(equalTo: layoutGuide.topAnchor, constant: insets.top)
+		topConstraint.identifier = ConstraintIdentifier.top.rawValue
+
+		let bottomConstraint = layoutGuide.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: insets.bottom)
+		bottomConstraint.identifier = ConstraintIdentifier.bottom.rawValue
+
+		NSLayoutConstraint.activate([leftConstraint, rightConstraint, topConstraint, bottomConstraint])
 	}
 
-	func cleanupOldConstraints() {
-		let constraintsToRemove = containerView.constraints.filter { $0.identifier == Self.constraintIdentifier }
-		containerView.removeConstraints(constraintsToRemove)
+	func updateConstraints() {
+		switch currentState {
+		case .view(let state):
+			if let view = viewStore[state] as? StatefulPlaceholderView {
+				updateConstraints(for: containerView, insets: view.placeholderViewInsets())
+			}
+		default:
+			break
+		}
+	}
+
+	func updateConstraints(for view: UIView, insets: UIEdgeInsets) {
+		let constraints = Dictionary(grouping: view.constraints) { $0.identifier.flatMap { ConstraintIdentifier(rawValue: $0) } }
+		constraints[.top]?.forEach { $0.constant = insets.top }
+		constraints[.bottom]?.forEach { $0.constant = insets.bottom }
+		constraints[.left]?.forEach { $0.constant = insets.left }
+		constraints[.right]?.forEach { $0.constant = insets.right }
 	}
 }
