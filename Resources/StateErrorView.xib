@@ -22,7 +22,7 @@
                         <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="center" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="8I8-gU-YbN">
                             <rect key="frame" x="0.0" y="59.5" width="360" height="203.5"/>
                             <subviews>
-                                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="6H2-zV-XHR" customClass="TintedImageView" customModule="AppwiseCore">
+                                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="6H2-zV-XHR" customClass="ImageViewWithTintFix" customModule="AppwiseCore">
                                     <rect key="frame" x="147.5" y="0.0" width="65" height="65"/>
                                     <constraints>
                                         <constraint firstAttribute="width" secondItem="6H2-zV-XHR" secondAttribute="height" multiplier="1:1" priority="999" id="I89-T6-OFg"/>
