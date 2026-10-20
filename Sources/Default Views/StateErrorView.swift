@@ -15,6 +15,8 @@ public final class StateErrorView: UIView {
 	@IBOutlet public var button: AnimatableButton!
 	// swiftlint:enable private_outlet
 
+	private var placeholderUpdateHandler: StatefulPlaceholderViewHandler?
+
 	public weak var delegate: PlaceholderViewDelegate?
 
 	@objc public dynamic var titleColor: UIColor? = .black {
@@ -37,7 +39,13 @@ public final class StateErrorView: UIView {
 		didSet { subtitleLabel.font = subtitleFont }
 	}
 
-	@objc public dynamic var edgeInsets = UIEdgeInsets(top: 20, left: 30, bottom: 20, right: 30)
+	@objc public dynamic var edgeInsets = UIEdgeInsets(top: 20, left: 30, bottom: 20, right: 30) {
+		didSet {
+			if edgeInsets != oldValue {
+				placeholderUpdateHandler?()
+			}
+		}
+	}
 
 	@IBAction private func tappedButton() {
 		delegate?.tappedPlaceholderButton(in: self)
@@ -63,6 +71,10 @@ extension StateErrorView: NibReusable {
 extension StateErrorView: StatefulPlaceholderView {
 	public func placeholderViewInsets() -> UIEdgeInsets {
 		return edgeInsets
+	}
+	
+	public func configure(updateHandler: StatefulPlaceholderViewHandler?) {
+		placeholderUpdateHandler = updateHandler
 	}
 }
 

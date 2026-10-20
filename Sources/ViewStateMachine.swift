@@ -169,31 +169,12 @@ public class ViewStateMachine {
 			newView.translatesAutoresizingMaskIntoConstraints = false
 			containerView.addSubview(newView)
 
-			let insets = (newView as? StatefulPlaceholderView)?.placeholderViewInsets() ?? UIEdgeInsets()
-			if #available(iOS 11.0, *) {
-				let safeAreaLayoutGuide = containerView.safeAreaLayoutGuide
+			var placeholderView = newView as? StatefulPlaceholderView
+			let insets = placeholderView?.placeholderViewInsets() ?? .zero
 
-				newView.rightAnchor
-					.constraint(equalTo: safeAreaLayoutGuide.rightAnchor, constant: -insets.right)
-					.isActive = true
-				newView.leftAnchor
-					.constraint(equalTo: safeAreaLayoutGuide.leftAnchor, constant: insets.left)
-					.isActive = true
-				newView.topAnchor
-					.constraint(equalTo: safeAreaLayoutGuide.topAnchor, constant: insets.top)
-					.isActive = true
-				newView.bottomAnchor
-					.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor, constant: -insets.bottom)
-					.isActive = true
-			} else {
-				let insets = (newView as? StatefulPlaceholderView)?.placeholderViewInsets() ?? UIEdgeInsets()
-
-				let metrics = ["top": insets.top, "bottom": insets.bottom, "left": insets.left, "right": insets.right]
-				let views = ["view": newView]
-				let hConstraints = NSLayoutConstraint.constraints(withVisualFormat: "|-left-[view]-right-|", options: [], metrics: metrics, views: views)
-				let vConstraints = NSLayoutConstraint.constraints(withVisualFormat: "V:|-top-[view]-bottom-|", options: [], metrics: metrics, views: views)
-				containerView.addConstraints(hConstraints)
-				containerView.addConstraints(vConstraints)
+			addConstraints(for: newView, insets: insets)
+			placeholderView?.configure { [weak self] in
+				self?.updateConstraints()
 			}
 		}
 
@@ -226,6 +207,10 @@ public class ViewStateMachine {
 		let animationCompletion: (Bool) -> Void = { [weak self] _ in
 			for (_, view) in store {
 				view.removeFromSuperview()
+
+				if let placeholderView = view as? StatefulPlaceholderView {
+					placeholderView.configure(updateHandler: nil)
+				}
 			}
 
 			// Remove the container view
@@ -240,6 +225,10 @@ public class ViewStateMachine {
 	private func removePendingViews() {
 		for view in pendingViews {
 			view.removeFromSuperview()
+
+			if let placeholderView = view as? StatefulPlaceholderView {
+				placeholderView.configure(updateHandler: nil)
+			}
 		}
 		pendingViews.removeAll()
 	}
@@ -250,5 +239,79 @@ public class ViewStateMachine {
 		} else {
 			completion?(true)
 		}
+	}
+}
+
+// MARK: - Constraints
+
+private extension ViewStateMachine {
+	enum ConstraintIdentifier: String {
+		case top, bottom, left, right
+	}
+
+	func addConstraints(for view: UIView, insets: UIEdgeInsets) {
+		if #available(iOS 11.0, *), false {
+			addConstraints(for: view, insets: insets, layoutGuide: containerView.safeAreaLayoutGuide)
+		} else {
+			addConstraintsOld(for: view, insets: insets)
+		}
+	}
+
+	func addConstraintsOld(for view: UIView, insets: UIEdgeInsets) {
+		let metrics = ["top": insets.top, "bottom": insets.bottom, "left": insets.left, "right": insets.right]
+		let views = ["view": view]
+
+		let leftConstraints = NSLayoutConstraint.constraints(withVisualFormat: "|-left-[view]", options: [], metrics: metrics, views: views)
+		leftConstraints.forEach { $0.identifier = ConstraintIdentifier.left.rawValue }
+
+		let rightConstraints = NSLayoutConstraint.constraints(withVisualFormat: "[view]-right-|", options: [], metrics: metrics, views: views)
+		rightConstraints.forEach { $0.identifier = ConstraintIdentifier.right.rawValue }
+
+		let topConstraints = NSLayoutConstraint.constraints(withVisualFormat: "V:|-top-[view]", options: [], metrics: metrics, views: views)
+		topConstraints.forEach { $0.identifier = ConstraintIdentifier.top.rawValue }
+
+		let bottomConstraints = NSLayoutConstraint.constraints(withVisualFormat: "V:[view]-bottom-|", options: [], metrics: metrics, views: views)
+		bottomConstraints.forEach { $0.identifier = ConstraintIdentifier.bottom.rawValue }
+
+		containerView.addConstraints(leftConstraints)
+		containerView.addConstraints(rightConstraints)
+		containerView.addConstraints(topConstraints)
+		containerView.addConstraints(bottomConstraints)
+	}
+
+	@available(iOS 11.0, *)
+	func addConstraints(for view: UIView, insets: UIEdgeInsets, layoutGuide: UILayoutGuide) {
+		let leftConstraint = view.leftAnchor.constraint(equalTo: layoutGuide.leftAnchor, constant: insets.left)
+		leftConstraint.identifier = ConstraintIdentifier.left.rawValue
+
+		let rightConstraint = layoutGuide.rightAnchor.constraint(equalTo: view.rightAnchor, constant: insets.right)
+		rightConstraint.identifier = ConstraintIdentifier.right.rawValue
+
+		let topConstraint = view.topAnchor.constraint(equalTo: layoutGuide.topAnchor, constant: insets.top)
+		topConstraint.identifier = ConstraintIdentifier.top.rawValue
+
+		let bottomConstraint = layoutGuide.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: insets.bottom)
+		bottomConstraint.identifier = ConstraintIdentifier.bottom.rawValue
+
+		NSLayoutConstraint.activate([leftConstraint, rightConstraint, topConstraint, bottomConstraint])
+	}
+
+	func updateConstraints() {
+		switch currentState {
+		case .view(let state):
+			if let view = viewStore[state] as? StatefulPlaceholderView {
+				updateConstraints(for: containerView, insets: view.placeholderViewInsets())
+			}
+		default:
+			break
+		}
+	}
+
+	func updateConstraints(for view: UIView, insets: UIEdgeInsets) {
+		let constraints = Dictionary(grouping: view.constraints) { $0.identifier.flatMap { ConstraintIdentifier(rawValue: $0) } }
+		constraints[.top]?.forEach { $0.constant = insets.top }
+		constraints[.bottom]?.forEach { $0.constant = insets.bottom }
+		constraints[.left]?.forEach { $0.constant = insets.left }
+		constraints[.right]?.forEach { $0.constant = insets.right }
 	}
 }

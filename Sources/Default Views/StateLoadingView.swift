@@ -13,6 +13,8 @@ public final class StateLoadingView: UIView {
 	@IBOutlet public var subtitleLabel: UILabel!
 	// swiftlint:enable private_outlet
 
+	private var placeholderUpdateHandler: StatefulPlaceholderViewHandler?
+
 	@objc public dynamic var activityIndicatorColor: UIColor? = .gray {
 		didSet { activityIndicator.color = activityIndicatorColor }
 	}
@@ -33,7 +35,13 @@ public final class StateLoadingView: UIView {
 		didSet { subtitleLabel.font = subtitleFont }
 	}
 
-	@objc public dynamic var edgeInsets = UIEdgeInsets(top: 20, left: 30, bottom: 20, right: 30)
+	@objc public dynamic var edgeInsets = UIEdgeInsets(top: 20, left: 30, bottom: 20, right: 30) {
+		didSet {
+			if edgeInsets != oldValue {
+				placeholderUpdateHandler?()
+			}
+		}
+	}
 
 	public override func awakeFromNib() {
 		super.awakeFromNib()
@@ -55,6 +63,10 @@ extension StateLoadingView: NibReusable {
 extension StateLoadingView: StatefulPlaceholderView {
 	public func placeholderViewInsets() -> UIEdgeInsets {
 		return edgeInsets
+	}
+
+	public func configure(updateHandler: StatefulPlaceholderViewHandler?) {
+		placeholderUpdateHandler = updateHandler
 	}
 }
 
